@@ -16,7 +16,7 @@ imax = np.size(nuid)
 
 for i in xrange(0, imax):
     sim = ctools.ctobssim()
-    sim['inmodel']   = 'nu_sources'+str(nuid[i])+'.xml'
+    sim['inmodel']   = 'nu_sources_'+str(nuid[i])+'.xml'
     sim['caldb']     = caldb0
     sim['irf']       = irf0
     sim['outevents'] = 'events_nu_'+irf0+'_'+str(nuid[i])+'.fits'
@@ -37,7 +37,7 @@ for i in xrange(0, imax):
     like['caldb']     = caldb0
     like['irf']       = irf0
     like['edisp']     = True
-    like['inmodel']   = 'nu_sources'+str(nuid[i])+'.xml'
+    like['inmodel']   = 'nu_sources_'+str(nuid[i])+'.xml'
     like['outmodel']  = 'nu_'+str(nuid[i])+'_ts.xml'
     like["debug"]     = debug
     like.execute()
