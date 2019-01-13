@@ -80,6 +80,6 @@ for i in xrange(0, imax):
             bkg = xml.addCTAIrfBackground(lib)
             lib.appendChild(bkg)
 
-            open('nu_sources'+str(i+1)+'.xml', 'w').write(doc.toprettyxml('  '))
+            open('nu_sources_'+str(i+1)+'.xml', 'w').write(doc.toprettyxml('  '))
             
 fsrcpoint.close()
