@@ -39,9 +39,9 @@ hdr['TIMEREF'] = 'LOCAL'
 
 declination,redshift,A = np.loadtxt(input_model, skiprows=11, unpack=True)
 
-realsrc=open('nu_src_ts_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin)+'-'+str(imax)+'.dat', 'w')
-lowrealsrc=open('nu_src_low_ts_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin)+'-'+str(imax)+'.dat', 'w')
-fakesrc=open('nu_src_fake_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin)+'-'+str(imax)+'.dat', 'w')
+realsrc=open('nu_src_ts_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
+lowrealsrc=open('nu_src_low_ts_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
+fakesrc=open('nu_src_fake_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
 
 for i in xrange(imin, imax):
     z = redshift[i]
