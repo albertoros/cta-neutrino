@@ -105,7 +105,7 @@ for i in xrange(imin, imax):
             sim['outevents'] = 'events_nu_'+str(ttrans)+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(i+1)+'.fits'
             sim['ra']        = ra
             sim['dec']       = dec
-            sim['rad']       = 2.0
+            sim['rad']       = 5.0
             sim['tmin']      = '2020-05-31T12:00:00'
             sim['tmax']      = '2020-05-31T12:10:00'
             sim['emin']      = 0.02
