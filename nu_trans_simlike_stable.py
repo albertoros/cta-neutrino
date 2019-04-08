@@ -76,6 +76,7 @@ for i in xrange(imin, imax):
         sim['emin']      = 0.02
         sim['emax']      = 199.0
         sim['maxrate']   = 1.0e9
+        sim['seed']      = randint(1, 1000000000)
         sim['debug']     = debug
         sim['edisp']     = edisp
         sim.execute()
