@@ -26,7 +26,6 @@ options = parser.parse_args()
 input_model= options.alertfile
 
 imin = 0
-imax = 10000
 
 gam = 2.19
 
@@ -41,6 +40,8 @@ caldb='prod3b-v1'
 irf='North_z20_average_30m'
 
 declination,redshift,A = np.loadtxt(input_model, unpack=True)
+
+imax = len(redshift)
 
 nusrcts=open('nu_src_ts_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
 
