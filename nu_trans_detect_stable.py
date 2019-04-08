@@ -12,7 +12,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-alert', action='store', dest='alertfile',
-                        default='3e-9_all.out.alert', help='File with alerts'
+                        default='3e-9_all.out.alert', help='File with alerts')
 parser.add_argument('--irf', action='store', dest='irf',
                         default='North_z20_average_30m', help='IRF')
 parser.add_argument('--obs', action='store', dest='tobs',
