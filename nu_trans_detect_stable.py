@@ -10,7 +10,20 @@ from xml.dom import minidom
 
 tau =  OptDepth.readmodel(model = 'dominguez')
 
-input_model='3e-9_all.out.alert'
+parser = argparse.ArgumentParser()
+parser.add_argument('-alert', action='store', dest='alertfile',
+                        default='3e-9_all.out.alert', help='File with alerts')
+parser.add_argument('--irf', action='store', dest='irf',
+                        default='North_z20_average_30m', help='IRF')
+parser.add_argument('--obs', action='store', dest='tobs',
+                        type=float, default=600.,
+                        help='Observation duration time in [s]')
+parser.add_argument('--inter', action='store', dest='interaction',
+                        default='no',
+                        help='Interaction type: pp (proton-proton), pph (proton-photon), txs (TXS-like sources), no (no scaling)')
+options = parser.parse_args()
+
+input_model= options.alertfile
 
 imin = 0
 imax = 10000
