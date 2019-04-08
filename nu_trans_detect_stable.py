@@ -7,27 +7,50 @@ from random import uniform
 import xml_generator as xml
 from astropy.io import fits
 from xml.dom import minidom
+import argparse
 
-tau =  OptDepth.readmodel(model = 'dominguez')
 
-input_model='NeutrinoAlerts_10000_1e4_transient_100s_MD2014SFR_SC_2.13.out'
+parser = argparse.ArgumentParser()
+parser.add_argument('-alert', action='store', dest='alertfile',
+                        default='3e-9_all.out.alert', help='File with alerts'
+parser.add_argument('--irf', action='store', dest='irf',
+                        default='North_z20_average_30m', help='IRF')
+parser.add_argument('--obs', action='store', dest='tobs',
+                        type=float, default=600.,
+                        help='Observation duration time in [s]')
+parser.add_argument('--inter', action='store', dest='interaction',
+                        default='no',
+                        help='Interaction type: pp (proton-proton), pph (proton-photon), no (no scaling)')
+options = parser.parse_args()
+
+input_model= options.alertfile
 
 imin = 0
-imax = 10000
+imax = 50
 
 gam = 2.19
 
 ep = 100.
 
-tobscta = 600.
+tobscta = options.tobs
 
 debug = True
 edisp = True
 
 caldb='prod3b-v1'
-irf='North_z20_average_30m'
+irf= options.irf
 
+# flux scaling according to intearction type pp, p-gamma or no scaling
+if options.interaction == 'no':
+    A_prefix = 1.0
+if options.interaction == 'pp':
+    A_prefix = np.pow(2.,-gam-1)
+if options.interaction == 'pph':
+    A_prefix = np.pow(2.,-gam)
+    
 declination,redshift,A = np.loadtxt(input_model, skiprows=11, unpack=True)
+
+tau =  OptDepth.readmodel(model = 'dominguez')                       
 
 realsrc=open('nu_src_ts_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
 lowrealsrc=open('nu_src_low_ts_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
@@ -44,7 +67,7 @@ for i in xrange(imin, imax):
             atten = 1.
         else:
             atten = np.exp(-1. * tau.opt_depth(z,ETeV))
-        prefac = A[i] * 1e-13
+        prefac = A[i] * A_prefix * 1e-13
         spec = prefac * (ETeV / ep) ** (-gam)
         specebl = spec * atten
         sourcename = 'nu'+str(i+1)
@@ -73,7 +96,6 @@ for i in xrange(imin, imax):
         sim['emin']      = 0.02
         sim['emax']      = 199.0
         sim['maxrate']   = 1.0e9
-        sim['seed']      = randint(1, 1000000000)
         sim['debug']     = debug
         sim['edisp']     = edisp
         sim.run()
