@@ -20,7 +20,7 @@ parser.add_argument('--obs', action='store', dest='tobs',
                         help='Observation duration time in [s]')
 parser.add_argument('--inter', action='store', dest='interaction',
                         default='no',
-                        help='Interaction type: pp (proton-proton), pph (proton-photon), no (no scaling)')
+                        help='Interaction type: pp (proton-proton), pph (proton-photon), txs (TXS-like sources), no (no scaling)')
 options = parser.parse_args()
 
 input_model= options.alertfile
@@ -40,6 +40,8 @@ edisp = True
 caldb='prod3b-v1'
 irf= options.irf
 
+declination,redshift,A = np.loadtxt(input_model, skiprows=11, unpack=True)
+                    
 # flux scaling according to intearction type pp, p-gamma or no scaling
 if options.interaction == 'no':
     A_prefix = 1.0
@@ -48,8 +50,6 @@ if options.interaction == 'pp':
 if options.interaction == 'pph':
     A_prefix = np.pow(2.,-gam)
     
-declination,redshift,A = np.loadtxt(input_model, skiprows=11, unpack=True)
-
 tau =  OptDepth.readmodel(model = 'dominguez')                       
 
 realsrc=open('nu_src_ts_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
@@ -67,8 +67,12 @@ for i in xrange(imin, imax):
             atten = 1.
         else:
             atten = np.exp(-1. * tau.opt_depth(z,ETeV))
-        prefac = A[i] * A_prefix * 1e-13
-        spec = prefac * (ETeV / ep) ** (-gam)
+        if options.interaction == 'txs': # reference: https://arxiv.org/abs/1811.07439
+            prefac = A[i] * 1e-13
+            spec = prefac * (ETeV / ep) ** (-2) * exp(-0.1*(z+1)/ETeV - ETeV/(20.*(z+1)))
+        else:
+            prefac = A[i] * A_prefix * 1e-13
+            spec = prefac * (ETeV / ep) ** (-gam)
         specebl = spec * atten
         sourcename = 'nu'+str(i+1)
         Filefunction = 'spec_nu_ebl_'+str(i+1)+'.dat'
