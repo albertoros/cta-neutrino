@@ -23,7 +23,7 @@ parser.add_argument('--inter', action='store', dest='interaction',
                         help='Interaction type: pp (proton-proton), pph (proton-photon), txs (TXS-like sources), no (no scaling)')
 options = parser.parse_args()
 
-input_model= options.alertfile
+input_model = options.alertfile
 
 imin = 0
 
@@ -65,7 +65,7 @@ for i in xrange(imin, imax):
             atten = 1.
         else:
             atten = np.exp(-1. * tau.opt_depth(z,ETeV))
-         if options.interaction == 'txs': # reference: https://arxiv.org/abs/1811.07439
+        if options.interaction == 'txs': # reference: https://arxiv.org/abs/1811.07439
             prefac = A[i] * 1e-13
             spec = prefac * (ETeV / ep) ** (-2) * exp(-0.1*(z+1)/ETeV - ETeV/(20.*(z+1)))
         else:
