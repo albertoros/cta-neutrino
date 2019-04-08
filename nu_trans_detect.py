@@ -3,7 +3,7 @@ import ctools
 import cscripts
 import numpy as np
 from ebltable.tau_from_model import OptDepth
-from random import uniform
+from random import randint, uniform
 import xml_generator as xml
 from astropy.io import fits
 import argparse
@@ -52,7 +52,7 @@ hdr['TIMEUNIT'] = 's'
 hdr['TIMESYS'] = 'TT'
 hdr['TIMEREF'] = 'LOCAL'
 
-declination,redshift,A = np.loadtxt(input_model, skiprows=11, unpack=True)
+declination,redshift,A = np.loadtxt(input_model, unpack=True)
 imax = len(redshift)
 
 # flux scaling according to intearction type pp, p-gamma or no scaling
@@ -123,6 +123,8 @@ for i in xrange(imin, imax):
             lib.appendChild(bkg)
 
             open('nu_sources_'+str(i+1)+'.xml', 'w').write(doc.toprettyxml('  '))
+          
+            nuseed = randint(1, 1000000000)
             
             sim = ctools.ctobssim()
             sim['inmodel']   = 'nu_sources_'+str(i+1)+'.xml'
@@ -136,6 +138,7 @@ for i in xrange(imin, imax):
             sim['emin']      = 0.02
             sim['emax']      = 199.0
             sim['maxrate']   = 1.0e9
+            sim['seed']      = nuseed
             sim['debug']     = debug
             sim['edisp']     = edisp
             sim.run()
@@ -151,13 +154,13 @@ for i in xrange(imin, imax):
             
             if nuts >= 25.:
                 if nunormsp > 2. or nunormsp < 0.5:
-                    fake = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+'\n'
+                    fake = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+str(nuseed)+'\n'
                     fakesrc.write(fake)
                 else:
-                    real_nu = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+'\n'
+                    real_nu = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+str(nuseed)+'\n'
                     realsrc.write(real_nu)
             else:
-                lowreal_nu = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+'\n'
+                lowreal_nu = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+str(nuseed)+'\n'
                 lowrealsrc.write(lowreal_nu)
                     
 realsrc.close()
