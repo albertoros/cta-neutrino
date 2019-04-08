@@ -31,15 +31,23 @@ gam = 2.19
 
 ep = 100.
 
-tobscta = 600.
+tobscta = options.tobs
 
 debug = True
 edisp = True
 
 caldb='prod3b-v1'
-irf='North_z20_average_30m'
+irf=options.irf
 
 declination,redshift,A = np.loadtxt(input_model, unpack=True)
+
+# flux scaling according to intearction type pp, p-gamma or no scaling
+if options.interaction == 'no':
+    A_prefix = 1.0
+if options.interaction == 'pp':
+    A_prefix = np.pow(2.,-gam-1)
+if options.interaction == 'pph':
+    A_prefix = np.pow(2.,-gam)
 
 imax = len(redshift)
 
@@ -57,8 +65,12 @@ for i in xrange(imin, imax):
             atten = 1.
         else:
             atten = np.exp(-1. * tau.opt_depth(z,ETeV))
-        prefac = A[i] * 1e-13
-        spec = prefac * (ETeV / ep) ** (-gam)
+         if options.interaction == 'txs': # reference: https://arxiv.org/abs/1811.07439
+            prefac = A[i] * 1e-13
+            spec = prefac * (ETeV / ep) ** (-2) * exp(-0.1*(z+1)/ETeV - ETeV/(20.*(z+1)))
+        else:
+            prefac = A[i] * A_prefix * 1e-13
+            spec = prefac * (ETeV / ep) ** (-gam)
         specebl = spec * atten
         sourcename = 'nu'+str(i+1)
         Filefunction = 'spec_nu_ebl_'+str(i+1)+'.dat'
