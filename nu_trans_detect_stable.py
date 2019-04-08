@@ -26,7 +26,6 @@ options = parser.parse_args()
 input_model= options.alertfile
 
 imin = 0
-imax = 10000
 
 gam = 2.19
 
@@ -49,6 +48,8 @@ if options.interaction == 'pp':
     A_prefix = np.pow(2.,-gam-1)
 if options.interaction == 'pph':
     A_prefix = np.pow(2.,-gam)
+
+imax = len(redshift)
 
 nusrcts=open('nu_src_ts_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
 
