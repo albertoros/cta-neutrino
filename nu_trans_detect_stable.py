@@ -30,6 +30,7 @@ parser.add_argument('--inter', action='store', dest='interaction',
                         help='Interaction type: pp (proton-proton), pph (proton-photon), txs (TXS-like sources), no (no scaling)')
 options = parser.parse_args()
 
+
 input_model= options.alertfile
 
 gam = 2.19
@@ -43,6 +44,7 @@ edisp = True
 
 caldb='prod3b-v1'
 irf=options.irf
+
 
 declination,redshift,A = np.loadtxt(input_model, unpack=True)
 #print (declination,redshift,A)
@@ -125,6 +127,5 @@ for i in range(imin, imax):
         
         real_nu = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(nuseed)+'\n'
         nusrcts.write(real_nu)
-        #print(str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(nuseed)+'\n')
         
 nusrcts.close()
