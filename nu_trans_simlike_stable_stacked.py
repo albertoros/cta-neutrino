@@ -26,7 +26,7 @@ edisp = True
 caldb='prod3b-v1'
 irf='North_z20_average_30m'
 
-declination,redshift,A = np.loadtxt(input_model, skiprows=11, unpack=True)
+declination,redshift,A = np.loadtxt(input_model, unpack=True)
 
 imax = len(redshift)
 
