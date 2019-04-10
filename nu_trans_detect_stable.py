@@ -6,7 +6,6 @@ from ebltable.tau_from_model import OptDepth
 from random import randint, uniform
 import xml_generator as xml
 from astropy.io import fits
-from xml.dom import minidom
 import argparse
 
 tau =  OptDepth.readmodel(model = 'dominguez')
