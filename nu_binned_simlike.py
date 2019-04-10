@@ -152,7 +152,7 @@ for i in xrange(imin, imax):
         
         psf_cube = ctools.ctpsfcube()
         psf_cube['inobs']       ='events_nu_'+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(i+1)+'.fits'
-        psf_cube['incube']      = 'cube_'+str(i+1)+'.fits'
+        psf_cube['incube']      = 'NONE'
         psf_cube['caldb']       = caldb
         psf_cube['irf']         = irf
         psf_cube['xref']        = ra
@@ -196,7 +196,7 @@ for i in xrange(imin, imax):
         edisp_cube['inobs']     = 'events_nu_'+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(i+1)+'.fits'
         edisp_cube['caldb']     = caldb
         edisp_cube['irf']       = irf
-        edisp_cube['incube']    = 'cube_'+str(i+1)+'.fits'
+        edisp_cube['incube']    = 'NONE'
         edisp_cube['xref']      = ra
         edisp_cube['yref']      = dec
         edisp_cube['proj']      = 'CAR'
