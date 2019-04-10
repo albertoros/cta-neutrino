@@ -159,9 +159,9 @@ for i in xrange(imin, imax):
         psf_cube['yref']        = dec
         psf_cube['proj']        = 'CAR'
         psf_cube['coordsys']    = 'CEL'
-        psf_cube['binsz']       = binz
-        psf_cube['nxpix']       = x_pixs
-        psf_cube['nypix']       = y_pixs
+        psf_cube['binsz']       = 1.0
+        psf_cube['nxpix']       = 10
+        psf_cube['nypix']       = 10
         psf_cube['ebinalg']     = 'LOG'
         psf_cube['emin']        = emin
         psf_cube['emax']        = emax
@@ -201,9 +201,9 @@ for i in xrange(imin, imax):
         edisp_cube['yref']      = dec
         edisp_cube['proj']      = 'CAR'
         edisp_cube['coordsys']  = 'CEL'
-        edisp_cube['binsz']       = binz
-        edisp_cube['nxpix']       = x_pixs
-        edisp_cube['nypix']       = y_pixs
+        edisp_cube['binsz']       = 1.0
+        edisp_cube['nxpix']       = 10
+        edisp_cube['nypix']       = 10
         edisp_cube['ebinalg']     = 'LOG'
         edisp_cube['emin']        = emin
         edisp_cube['emax']        = emax
