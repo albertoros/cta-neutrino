@@ -28,8 +28,6 @@ options = parser.parse_args()
 
 input_model= options.alertfile
 
-imin = 0
-
 gam = 2.19
 
 ep = 100.
@@ -53,15 +51,17 @@ hdr['TIMESYS'] = 'TT'
 hdr['TIMEREF'] = 'LOCAL'
 
 declination,redshift,A = np.loadtxt(input_model, unpack=True)
-imax = len(redshift)
 
-# flux scaling according to intearction type pp, p-gamma or no scaling
+# flux scaling according to interaction type pp, p-gamma or no scaling
 if options.interaction == 'no':
     A_prefix = 1.0
 if options.interaction == 'pp':
     A_prefix = np.pow(2.,-gam-1)
 if options.interaction == 'pph':
     A_prefix = np.pow(2.,-gam)
+    
+imin = options.imin
+imax = options.imax #len(redshift)
 
 realsrc=open('nu_src_ts_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
 lowrealsrc=open('nu_src_low_ts_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
