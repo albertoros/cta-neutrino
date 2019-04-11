@@ -73,18 +73,18 @@ for i in range(imin, imax):
     z = redshift[i]
     if z < 4.:
         lib,doc = xml.CreateLib()
+        ra0 = uniform(0.,360.)
         if offsetra == 0:
-            ra = uniform(0.,360.)
+            dra = 0.
         else:
-            ra0 = uniform(0.,360.)
             dra = uniform(-1.*offsetra,offsetra)
-            ra = ra0 + dra
+        ra = ra0 + dra
+        dec0 = declination[i]
         if offsetdec == 0:
-            dec = declination[i]
+            ddec = 0.
         else:
-            dec0 = declination[i]
             ddec = uniform(-1.*offsetdec,offsetdec)
-            dec = dec0 + ddec
+        dec = dec0 + ddec
         ETeV = np.logspace(-2,2.5,45)
         EMeV = ETeV * 1e6
         if z < 0.01:
@@ -102,7 +102,7 @@ for i in range(imin, imax):
         Filefunction = 'spec_'+str(i+1)+'.dat'
         np.savetxt(Filefunction, np.column_stack([EMeV,specebl + 1.e-300]))
         speci = xml.addFileFunction(lib, sourcename, type = "PointSource", filefun=Filefunction, flux_free=1, flux_value=1., flux_scale=1., flux_max=100000000.0, flux_min=0.0)
-        spatial = xml.AddPointLike(doc,ra,dec)
+        spatial = xml.AddPointLike(doc,ra0,dec0)
         speci.appendChild(spatial)
 
         lib.appendChild(speci)
