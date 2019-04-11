@@ -64,8 +64,8 @@ hdr['TIMEREF'] = 'LOCAL'
 
 declination,redshift,A = np.loadtxt(input_model, unpack=True)
 
-offsetdec = options.offdec
-offsetra = options.offra
+offsetdec = float(options.offdec)
+offsetra = float(options.offra)
 
 # flux scaling according to interaction type pp, p-gamma or no scaling
 if options.interaction == 'no':
