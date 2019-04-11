@@ -107,17 +107,17 @@ for i in xrange(imin, imax):
             t = fits.BinTableHDU.from_columns([time, norm],header=hdr)
             t.writeto(LCfile,overwrite=True) 
             tsig = tobs - tsigstart
-            if offra == 0:
+            if offsetra == 0:
                 ra = uniform(0.,360.)
             else:
                 ra0 = uniform(0.,360.)
-                dra = uniform(-1.*offra,offra)
+                dra = uniform(-1.*offsetra,offsetra)
                 ra = ra0 + dra
-            if offdec == 0:
+            if offsetdec == 0:
                 dec = declination[i]
             else:
                 dec0 = declination[i]
-                ddec = uniform(-1.*offdec,offdec)
+                ddec = uniform(-1.*offsetdec,offsetdec)
                 dec = dec0 + ddec
             ETeV = np.logspace(-2,2.5,45)
             EMeV = ETeV * 1e6
@@ -174,18 +174,8 @@ for i in xrange(imin, imax):
             nuts = like.obs().models()[sourcename].ts()
             nunormsp = like.obs().models()[sourcename].spectral()['Normalization'].value()
             nunormsp_error = like.obs().models()[sourcename].spectral()['Normalization'].error()
-            
-            if nuts >= 25.:
-                if nunormsp > 2. or nunormsp < 0.5:
-                    fake = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+str(nuseed)+'\n'
-                    fakesrc.write(fake)
-                else:
-                    real_nu = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+str(nuseed)+'\n'
-                    realsrc.write(real_nu)
-            else:
-                lowreal_nu = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+str(nuseed)+'\n'
-                lowrealsrc.write(lowreal_nu)
+                        
+            real_nu = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+' '+str(nuseed)+'\n'
+            nusrcts.write(real_nu)
                     
-realsrc.close()
-lowrealsrc.close()
-fakesrc.close()
+nusrcts.close()
