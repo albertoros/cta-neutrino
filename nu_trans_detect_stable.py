@@ -27,8 +27,13 @@ parser.add_argument('--obs', action='store', dest='tobs',
 parser.add_argument('--inter', action='store', dest='interaction',
                         default='no',
                         help='Interaction type: pp (proton-proton), pph (proton-photon), txs (TXS-like sources), no (no scaling)')
+parser.add_argument('--offdec', action='store', dest='offdec',
+                        default='0',
+                        help='DEC offset')
+parser.add_argument('--offra', action='store', dest='offra',
+                        default='0',
+                        help='RA offset')
 options = parser.parse_args()
-
 
 input_model= options.alertfile
 
@@ -41,12 +46,15 @@ tobscta = options.tobs
 debug = True
 edisp = True
 
-caldb='prod3b-v1'
-irf=options.irf
+caldb = 'prod3b-v1'
+irf = options.irf
 
 
 declination,redshift,A = np.loadtxt(input_model, unpack=True)
 #print (declination,redshift,A)
+
+offsetdec = argparse.offdec
+offsetra = argparse.offra
 
 # flux scaling according to intearction type pp, p-gamma or no scaling
 if options.interaction == 'no':
@@ -65,8 +73,18 @@ for i in range(imin, imax):
     z = redshift[i]
     if z < 4.:
         lib,doc = xml.CreateLib()
-        ra = uniform(0.,360.)
-        dec = declination[i]
+        if offsetra == 0:
+            ra = uniform(0.,360.)
+        else:
+            ra0 = uniform(0.,360.)
+            dra = uniform(-1.*offsetra,offsetra)
+            ra = ra0 + dra
+        if offsetdec == 0:
+            dec = declination[i]
+        else:
+            dec0 = declination[i]
+            ddec = uniform(-1.*offsetdec,offsetdec)
+            dec = dec0 + ddec
         ETeV = np.logspace(-2,2.5,45)
         EMeV = ETeV * 1e6
         if z < 0.01:
