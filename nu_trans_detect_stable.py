@@ -6,7 +6,6 @@ from ebltable.tau_from_model import OptDepth
 from random import randint, uniform
 import xml_generator as xml
 from astropy.io import fits
-from xml.dom import minidom
 import argparse
 
 tau =  OptDepth.readmodel(model = 'dominguez')
@@ -28,8 +27,13 @@ parser.add_argument('--obs', action='store', dest='tobs',
 parser.add_argument('--inter', action='store', dest='interaction',
                         default='no',
                         help='Interaction type: pp (proton-proton), pph (proton-photon), txs (TXS-like sources), no (no scaling)')
+parser.add_argument('--offdec', action='store', dest='offdec',
+                        default='0',
+                        help='DEC offset')
+parser.add_argument('--offra', action='store', dest='offra',
+                        default='0',
+                        help='RA offset')
 options = parser.parse_args()
-
 
 input_model= options.alertfile
 
@@ -42,12 +46,15 @@ tobscta = options.tobs
 debug = True
 edisp = True
 
-caldb='prod3b-v1'
-irf=options.irf
+caldb = 'prod3b-v1'
+irf = options.irf
 
 
 declination,redshift,A = np.loadtxt(input_model, unpack=True)
 #print (declination,redshift,A)
+
+offsetdec = options.offdec
+offsetra = options.offra
 
 # flux scaling according to intearction type pp, p-gamma or no scaling
 if options.interaction == 'no':
@@ -66,8 +73,18 @@ for i in range(imin, imax):
     z = redshift[i]
     if z < 4.:
         lib,doc = xml.CreateLib()
-        ra = uniform(0.,360.)
-        dec = declination[i]
+        ra0 = uniform(0.,360.)
+        if offsetra == 0:
+            dra = 0.
+        else:
+            dra = uniform(-1.*offsetra,offsetra)
+        ra = ra0 + dra
+        dec0 = declination[i]
+        if offsetdec == 0:
+            ddec = 0.
+        else:
+            ddec = uniform(-1.*offsetdec,offsetdec)
+        dec = dec0 + ddec
         ETeV = np.logspace(-2,2.5,45)
         EMeV = ETeV * 1e6
         if z < 0.01:
@@ -85,7 +102,7 @@ for i in range(imin, imax):
         Filefunction = 'spec_'+str(i+1)+'.dat'
         np.savetxt(Filefunction, np.column_stack([EMeV,specebl + 1.e-300]))
         speci = xml.addFileFunction(lib, sourcename, type = "PointSource", filefun=Filefunction, flux_free=1, flux_value=1., flux_scale=1., flux_max=100000000.0, flux_min=0.0)
-        spatial = xml.AddPointLike(doc,ra,dec)
+        spatial = xml.AddPointLike(doc,ra0,dec0)
         speci.appendChild(spatial)
 
         lib.appendChild(speci)
