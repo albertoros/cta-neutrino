@@ -13,6 +13,12 @@ tau =  OptDepth.readmodel(model = 'dominguez')
 parser = argparse.ArgumentParser()
 parser.add_argument('-alert', action='store', dest='alertfile',
                         default='3e-9_all.out.alert', help='File with alerts')
+parser.add_argument('--nu_min', action='store', dest='imin',
+                        type=int, default=0,
+                        help='First alert to process (min. index, default 0)')
+parser.add_argument('--nu_max', action='store', dest='imax',
+                        type=int, default=10,
+                        help='Last alert to process (max. index, default 10)')
 parser.add_argument('--irf', action='store', dest='irf',
                         default='North_z20_average_30m', help='IRF')
 parser.add_argument('--obs', action='store', dest='tobs',
@@ -26,10 +32,10 @@ parser.add_argument('--trans', action='store', dest='trans',
                         help='Transient duration [s]')
 parser.add_argument('--offdec', action='store', dest='offdec',
                         default='0',
-                        help='Offset in DEC')
+                        help='DEC offset')
 parser.add_argument('--offra', action='store', dest='offra',
                         default='0',
-                        help='Offset in RA')
+                        help='RA offset')
 options = parser.parse_args()
 
 input_model= options.alertfile
@@ -45,8 +51,8 @@ tobscta = argparse.tobs
 debug = True
 edisp = True
 
-caldb='prod3b-v1'
-irf=argparse.irf
+caldb = 'prod3b-v1'
+irf = argparse.irf
 
 hdr = fits.Header()
 hdr['EXTNAME'] = 'Time profile'
@@ -58,8 +64,8 @@ hdr['TIMEREF'] = 'LOCAL'
 
 declination,redshift,A = np.loadtxt(input_model, unpack=True)
 
-offsetdec=argparse.offdec
-offsetra=argparse.offra
+offsetdec = argparse.offdec
+offsetra = argparse.offra
 
 # flux scaling according to interaction type pp, p-gamma or no scaling
 if options.interaction == 'no':
