@@ -93,7 +93,7 @@ for i in range(imin, imax):
             atten = np.exp(-1. * tau.opt_depth(z,ETeV))
         if options.interaction == 'txs': # reference: https://arxiv.org/abs/1811.07439
             prefac = A[i] * 1e-13
-            spec = prefac * (ETeV / ep) ** (-2) * exp(-0.1*(z+1)/ETeV - ETeV/(20.*(z+1)))
+            spec = prefac * (ETeV / ep) ** (-2) * np.exp(-0.1*(z+1)/ETeV - ETeV/(20.*(z+1)))
         else:
             prefac = A[i] * A_prefix * 1e-13
             spec = prefac * (ETeV / ep) ** (-gam)
