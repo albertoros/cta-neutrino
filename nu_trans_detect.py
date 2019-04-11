@@ -44,15 +44,15 @@ gam = 2.19
 
 ep = 100.
 
-ttrans = argparse.trans
+ttrans = options.trans
 
-tobscta = argparse.tobs
+tobscta = options.tobs
 
 debug = True
 edisp = True
 
 caldb = 'prod3b-v1'
-irf = argparse.irf
+irf = options.irf
 
 hdr = fits.Header()
 hdr['EXTNAME'] = 'Time profile'
@@ -64,8 +64,8 @@ hdr['TIMEREF'] = 'LOCAL'
 
 declination,redshift,A = np.loadtxt(input_model, unpack=True)
 
-offsetdec = argparse.offdec
-offsetra = argparse.offra
+offsetdec = options.offdec
+offsetra = options.offra
 
 # flux scaling according to interaction type pp, p-gamma or no scaling
 if options.interaction == 'no':
