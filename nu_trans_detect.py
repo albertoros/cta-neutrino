@@ -24,6 +24,12 @@ parser.add_argument('--inter', action='store', dest='interaction',
 parser.add_argument('--trans', action='store', dest='trans',
                         default=100.,
                         help='Transient duration [s]')
+parser.add_argument('--offdec', action='store', dest='offdec',
+                        default='0',
+                        help='Offset in DEC')
+parser.add_argument('--offra', action='store', dest='offra',
+                        default='0',
+                        help='Offset in RA')
 options = parser.parse_args()
 
 input_model= options.alertfile
@@ -51,6 +57,9 @@ hdr['TIMESYS'] = 'TT'
 hdr['TIMEREF'] = 'LOCAL'
 
 declination,redshift,A = np.loadtxt(input_model, unpack=True)
+
+offsetdec=argparse.offdec
+offsetra=argparse.offra
 
 # flux scaling according to interaction type pp, p-gamma or no scaling
 if options.interaction == 'no':
@@ -94,8 +103,18 @@ for i in xrange(imin, imax):
             t = fits.BinTableHDU.from_columns([time, norm],header=hdr)
             t.writeto(LCfile,overwrite=True) 
             tsig = tobs - tsigstart
-            ra = uniform(0.,360.)
-            dec = declination[i]
+            if offra == 0:
+                ra = uniform(0.,360.)
+            else:
+                ra0 = uniform(0.,360.)
+                dra = uniform(-1.*offra,offra)
+                ra = ra0 + dra
+            if offdec == 0:
+                dec = declination[i]
+            else:
+                dec0 = declination[i]
+                ddec = uniform(-1.*offdec,offdec)
+                dec = dec0 + ddec
             ETeV = np.logspace(-2,2.5,45)
             EMeV = ETeV * 1e6
             if z < 0.01:
