@@ -13,6 +13,12 @@ tau =  OptDepth.readmodel(model = 'dominguez')
 parser = argparse.ArgumentParser()
 parser.add_argument('-alert', action='store', dest='alertfile',
                         default='3e-9_all.out.alert', help='File with alerts')
+parser.add_argument('--nu_min', action='store', dest='imin',
+                        type=int, default=0,
+                        help='First alert to process (min. index, default 0)')
+parser.add_argument('--nu_max', action='store', dest='imax',
+                        type=int, default=10,
+                        help='Last alert to process (max. index, default 10)')
 parser.add_argument('--irf', action='store', dest='irf',
                         default='North_z20_average_30m', help='IRF')
 parser.add_argument('--obs', action='store', dest='tobs',
@@ -24,11 +30,15 @@ parser.add_argument('--inter', action='store', dest='interaction',
 parser.add_argument('--trans', action='store', dest='trans',
                         default=100.,
                         help='Transient duration [s]')
+parser.add_argument('--offdec', action='store', dest='offdec',
+                        default='0',
+                        help='DEC offset')
+parser.add_argument('--offra', action='store', dest='offra',
+                        default='0',
+                        help='RA offset')
 options = parser.parse_args()
 
 input_model= options.alertfile
-
-imin = 0
 
 gam = 2.19
 
@@ -41,8 +51,8 @@ tobscta = argparse.tobs
 debug = True
 edisp = True
 
-caldb='prod3b-v1'
-irf=argparse.irf
+caldb = 'prod3b-v1'
+irf = argparse.irf
 
 hdr = fits.Header()
 hdr['EXTNAME'] = 'Time profile'
@@ -53,19 +63,22 @@ hdr['TIMESYS'] = 'TT'
 hdr['TIMEREF'] = 'LOCAL'
 
 declination,redshift,A = np.loadtxt(input_model, unpack=True)
-imax = len(redshift)
 
-# flux scaling according to intearction type pp, p-gamma or no scaling
+offsetdec = argparse.offdec
+offsetra = argparse.offra
+
+# flux scaling according to interaction type pp, p-gamma or no scaling
 if options.interaction == 'no':
     A_prefix = 1.0
 if options.interaction == 'pp':
     A_prefix = np.pow(2.,-gam-1)
 if options.interaction == 'pph':
     A_prefix = np.pow(2.,-gam)
+    
+imin = options.imin
+imax = options.imax #len(redshift)
 
-realsrc=open('nu_src_ts_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
-lowrealsrc=open('nu_src_low_ts_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
-fakesrc=open('nu_src_fake_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
+nusrcts=open('nu_src_ts_'+str(int(ttrans))+'s_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
 
 for i in xrange(imin, imax):
     z = redshift[i]
@@ -94,8 +107,18 @@ for i in xrange(imin, imax):
             t = fits.BinTableHDU.from_columns([time, norm],header=hdr)
             t.writeto(LCfile,overwrite=True) 
             tsig = tobs - tsigstart
-            ra = uniform(0.,360.)
-            dec = declination[i]
+            ra0 = uniform(0.,360.)
+            if offsetra == 0:
+                dra = 0.
+            else:
+                dra = uniform(-1.*offsetra,offsetra)
+            ra = ra0 + dra
+            dec0 = declination[i]
+            if offsetdec == 0:
+                ddec = 0.
+            else:
+                ddec = uniform(-1.*offsetdec,offsetdec)
+            dec = dec0 + ddec
             ETeV = np.logspace(-2,2.5,45)
             EMeV = ETeV * 1e6
             if z < 0.01:
@@ -113,7 +136,7 @@ for i in xrange(imin, imax):
             Filefunction = 'spec_nu_ebl_'+str(i+1)+'.dat'
             np.savetxt(Filefunction, np.column_stack([EMeV,specebl + 1.e-300]))
             speci = xml.addFileFunction(lib, sourcename, type = "PointSource", filefun=Filefunction, flux_free=1, flux_value=1., flux_scale=1., flux_max=100000000.0, flux_min=0.0)
-            spatial = xml.AddPointLike(doc,ra,dec)
+            spatial = xml.AddPointLike(doc,ra0,dec0)
             temporal = xml.AddLCTrans(doc, LCfile, 1.)
             speci.appendChild(spatial)
             speci.appendChild(temporal)
@@ -151,18 +174,8 @@ for i in xrange(imin, imax):
             nuts = like.obs().models()[sourcename].ts()
             nunormsp = like.obs().models()[sourcename].spectral()['Normalization'].value()
             nunormsp_error = like.obs().models()[sourcename].spectral()['Normalization'].error()
-            
-            if nuts >= 25.:
-                if nunormsp > 2. or nunormsp < 0.5:
-                    fake = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+str(nuseed)+'\n'
-                    fakesrc.write(fake)
-                else:
-                    real_nu = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+str(nuseed)+'\n'
-                    realsrc.write(real_nu)
-            else:
-                lowreal_nu = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+str(nuseed)+'\n'
-                lowrealsrc.write(lowreal_nu)
+                        
+            real_nu = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+' '+str(nuseed)+'\n'
+            nusrcts.write(real_nu)
                     
-realsrc.close()
-lowrealsrc.close()
-fakesrc.close()
+nusrcts.close()
