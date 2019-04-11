@@ -136,7 +136,7 @@ for i in xrange(imin, imax):
             Filefunction = 'spec_nu_ebl_'+str(i+1)+'.dat'
             np.savetxt(Filefunction, np.column_stack([EMeV,specebl + 1.e-300]))
             speci = xml.addFileFunction(lib, sourcename, type = "PointSource", filefun=Filefunction, flux_free=1, flux_value=1., flux_scale=1., flux_max=100000000.0, flux_min=0.0)
-            spatial = xml.AddPointLike(doc,ra,dec)
+            spatial = xml.AddPointLike(doc,ra0,dec0)
             temporal = xml.AddLCTrans(doc, LCfile, 1.)
             speci.appendChild(spatial)
             speci.appendChild(temporal)
