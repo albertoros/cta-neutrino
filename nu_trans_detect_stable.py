@@ -53,8 +53,8 @@ irf = options.irf
 declination,redshift,A = np.loadtxt(input_model, unpack=True)
 #print (declination,redshift,A)
 
-offsetdec = options.offdec
-offsetra = options.offra
+offsetdec = float(options.offdec)
+offsetra = float(options.offra)
 
 # flux scaling according to intearction type pp, p-gamma or no scaling
 if options.interaction == 'no':
