@@ -64,13 +64,14 @@ if options.interaction == 'pp':
 if options.interaction == 'pph':
     A_prefix = np.pow(2.,-gam)
 
-imin = options.imin
+imin = options.imax-1 #options.imin
 imax = options.imax  #len(redshift)
 
 nusrcts=open('nu_src_ts_'+irf+'_'+str(int(tobscta))+'s_'+str(imin+1)+'-'+str(imax)+'.dat', 'w')
 
 for i in range(imin, imax):
     z = redshift[i]
+    dec0 = declination[i]
     if z < 4.:
         lib,doc = xml.CreateLib()
         ra0 = uniform(0.,360.)
@@ -79,7 +80,6 @@ for i in range(imin, imax):
         else:
             dra = uniform(-1.*offsetra,offsetra)
         ra = ra0 + dra
-        dec0 = declination[i]
         if offsetdec == 0:
             ddec = 0.
         else:
@@ -142,7 +142,15 @@ for i in range(imin, imax):
         nunormsp_error = like.obs().models()[sourcename].spectral()['Normalization'].error()
               
         
-        real_nu = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(nuseed)+'\n'
-        nusrcts.write(real_nu)
+        real_nu = str(i+1)+' '+str(z)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(nuseed)+'\n'
+    else:
+        nuts = -1
+        nunormsp = -1
+        nunormsp_error = -1
+        ra = -1
+        nuseed = -1
+        real_nu = str(i+1)+' '+str(z)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec0)+' '+str(nuseed)+'\n'
+
+nusrcts.write(real_nu)
         
 nusrcts.close()
