@@ -175,7 +175,17 @@ for i in xrange(imin, imax):
             nunormsp = like.obs().models()[sourcename].spectral()['Normalization'].value()
             nunormsp_error = like.obs().models()[sourcename].spectral()['Normalization'].error()
                         
-            real_nu = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+' '+str(tsig)+' '+str(nuseed)+'\n'
+            real_nu = str(i+1)+' '+str(nuts)+' '+str(nunormsp)+' '+str(nunormsp_error)+' '+str(ra)+' '+str(dec)+str(z)+' '+' '+str(tsig)+' '+str(nuseed)+'\n'
             nusrcts.write(real_nu)
+            
+    #Sources with tsigstart > tobs
+        else:
+            non_obs_source= str(i+1)+' '+str(-1)+' '+str(-1)+' '+str(-1)+' '+str(-1)+' '+str(declination[i])+' '+str(redshift[i])+' '+str(tsigstart)+' '+str(-1)+'\n'
+            nusrcts.write(non_obs_source)
+    #Sources with z>4
+    else:
+        high_z_source = str(i+1)+' '+str(-2)+' '+str(-2)+' '+str(-2)+' '+str(-2)+' '+str(declination[i])+' '+str(redshift[i])+' '+str(-2)+' '+str(-2)+'\n'
+        nusrcts.write(high_z_source)
+
                     
 nusrcts.close()
